@@ -109,6 +109,10 @@ static const bool DEFAULT_PROXYRANDOMIZE = true;
 static const bool DEFAULT_REST_ENABLE = false;
 static const bool DEFAULT_STOPAFTERBLOCKIMPORT = false;
 
+// VELES BEGIN
+const static std::string DEFAULT_MINING_ALGO = "scrypt";
+// VELES END
+
 // Dump addresses to banlist.dat every 15 minutes (900s)
 static constexpr int DUMP_BANS_INTERVAL = 60 * 15;
 
@@ -428,11 +432,13 @@ void SetupServerArgs()
     std::vector<std::string> hidden_args = {
         "-dbcrashratio", "-forcecompactdb",
         // GUI args. These will be overwritten by SetupUIArgs for the GUI
-        "-allowselfsignedrootcertificates", "-choosedatadir", "-lang=<lang>", "-min", "-resetguisettings", "-rootcertificates=<file>", "-splash", "-uiplatform"};
-        // VELES BEGIN
-        // GUI args
-        "-loadcss", "-dumpcss";
-        // VELES END
+        "-allowselfsignedrootcertificates", "-choosedatadir", "-lang=<lang>", "-min", "-resetguisettings", "-rootcertificates=<file>", "-splash", "-uiplatform",
+    // VELES BEGIN
+        // Veles-specific GUI args
+        "-loadcss", "-dumpcss"
+    };
+    // VELES END
+
     gArgs.AddArg("-version", "Print version and exit", false, OptionsCategory::OPTIONS);
     gArgs.AddArg("-alertnotify=<cmd>", "Execute command when a relevant alert is received or we see a really long fork (%s in cmd is replaced by message)", false, OptionsCategory::OPTIONS);
     gArgs.AddArg("-assumevalid=<hex>", strprintf("If this block is in the chain assume that it and its ancestors are valid and potentially skip their script verification (0 to verify all, default: %s, testnet: %s)", defaultChainParams->GetConsensus().defaultAssumeValid.GetHex(), testnetChainParams->GetConsensus().defaultAssumeValid.GetHex()), false, OptionsCategory::OPTIONS);
@@ -589,8 +595,8 @@ void SetupServerArgs()
     gArgs.AddArg("-blockmintxfee=<amt>", strprintf("Set lowest fee rate (in %s/kB) for transactions to be included in block creation. (default: %s)", CURRENCY_UNIT, FormatMoney(DEFAULT_BLOCK_MIN_TX_FEE)), false, OptionsCategory::BLOCK_CREATION);
     gArgs.AddArg("-blockversion=<n>", "Override block version to test forking scenarios", true, OptionsCategory::BLOCK_CREATION);
     // VELES BEGIN
-    //gArgs.AddArg("-algo=<algo>", strprintf("Mining algorithm: sha256d, scrypt, lyra2z, x11, x16r (default: sha256)"), false, OptionsCategory::BLOCK_CREATION);
-    gArgs.AddArg("-algo=<algo>", strprintf("Mining algorithm: sha256d, scrypt, lyra2z, x11, x16r (default: scrypt)"), false, OptionsCategory::BLOCK_CREATION);
+    gArgs.AddArg("-algo=<algo>", strprintf("Mining algorithm: sha256d, scrypt, lyra2z, x11, x16r (default: %s)", DEFAULT_MINING_ALGO.c_str()), false, OptionsCategory::BLOCK_CREATION);
+    gArgs.AddArg("-rpcbackcompatible", strprintf("Support backward compatible syntax for certain RPC methods that miners or mining pools might still depend on (default: %u). Disable this option to keep strict %i.%i RPC syntax. Affected methods: getblocktemplate", DEFAULT_RPC_BACK_COMPATIBLE, CLIENT_VERSION_MAJOR, CLIENT_VERSION_MINOR), false, OptionsCategory::RPC);
     // VELES END
 
     gArgs.AddArg("-rest", strprintf("Accept public REST requests (default: %u)", DEFAULT_REST_ENABLE), false, OptionsCategory::RPC);
@@ -961,8 +967,7 @@ void InitLogging()
 // VELES BEGIN
 void DisplayBootLogo()
 {
-    if (LogInstance().m_print_to_console)
-        fprintf(stdout, "%s\n", strVelesCoreLogoAscii.c_str());
+    LogPrintf("\n%s\n", strVelesCoreLogoAscii);
 }
 // VELES END
 
@@ -1261,8 +1266,7 @@ bool AppInitParameterInteraction()
     // FXTC BEGIN
     // algo switch
     // VELES BEGIN
-    //std::string strAlgo = gArgs.GetArg("-algo","sha256");
-    std::string strAlgo = gArgs.GetArg("-algo","scrypt");
+    std::string strAlgo = gArgs.GetArg("-algo", DEFAULT_MINING_ALGO);
     // VELES END
     transform(strAlgo.begin(), strAlgo.end(), strAlgo.begin(), ::tolower);
     if (strAlgo == "sha256d")

@@ -342,7 +342,7 @@ static UniValue gethalvingstatus(const JSONRPCRequest& request)
 
     if (request.fHelp || request.params.size() != 0)    // || (strMode != "basic" && strMode != "full" && strMode != "dev"))
         throw std::runtime_error(
-            "gethalvingstatus                   *** NEW: Experimental ***\n"    // ( \"mode\" )
+            "gethalvingstatus\n"    // ( \"mode\" )
             "\nReturns a json object containing an information related to block reward halving. A halving epoch is time between\n"
             "the start and end of block subsidy halving interval, where maximum block reward is the same for all the blocks\n"
             "within the epoch. If not enough coins are mined during the epoch, the halving will not occur and the current epoch\n"
@@ -481,7 +481,6 @@ static UniValue getmultialgostatus(const JSONRPCRequest& request)
     if (request.fHelp || request.params.size() != 0)
         throw std::runtime_error(
             RPCHelpMan{"getmultialgostatus",
-            //"\n*** Experimental: Use at your own risk, might be a subject to change any time. ***\n"
             "\nReturns a json object containing information related to multi-algo mining.",
             {},
             RPCResult{
@@ -701,7 +700,15 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
                     HelpExampleCli("getblocktemplate", "{\"rules\": [\"segwit\"]}")
             + HelpExampleRpc("getblocktemplate", "{\"rules\": [\"segwit\"]}")
                 },
-            }.ToString());
+            }.ToString()
+        // VELES BEGIN
+            + ((gArgs.GetBoolArg("-rpcbackcompatible", DEFAULT_RPC_BACK_COMPATIBLE))
+                ? "\nNotice: RPC backward compatibility is enabled and this method will return a result even without the required argument, "
+                  "which was optional in the previous version. It will assume the default value of {\"rules\": [\"segwit\"]}. To enforce "
+                  "strict checking of syntax described above, use -rpcbackcompatible=0\n"
+                : "")
+        // VELES END
+        );
 
     LOCK(cs_main);
 
@@ -845,7 +852,13 @@ static UniValue getblocktemplate(const JSONRPCRequest& request)
     const struct VBDeploymentInfo& segwit_info = VersionBitsDeploymentInfo[Consensus::DEPLOYMENT_SEGWIT];
     // GBT must be called with 'segwit' set in the rules
     if (setClientRules.count(segwit_info.name) != 1) {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, "getblocktemplate must be called with the segwit rule set (call with {\"rules\": [\"segwit\"]})");
+        // VELES BEGIN
+        // Backwards compatibility with 0.17 where the rule parameter is optional
+        if (gArgs.GetBoolArg("-rpcbackcompatible", DEFAULT_RPC_BACK_COMPATIBLE))
+            setClientRules.insert("segwit");
+        else
+        // VELES END
+            throw JSONRPCError(RPC_INVALID_PARAMETER, "getblocktemplate must be called with the segwit rule set (call with {\"rules\": [\"segwit\"]})");
     }
 
     // Update block
