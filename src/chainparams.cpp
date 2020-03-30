@@ -80,9 +80,7 @@ public:
 	      consensus.nMasternodePaymentsStartBlock = 50;
         //consensus.nMasternodePaymentsIncreaseBlock = 50;
         consensus.nMasternodePaymentsIncreasePeriod = 365 * 576 * 5; // 5 years, activated with VCIP01
-        consensus.nMasternodeCollateralMinimum = 2000; // starting MN collateral
-        consensus.nMasternodeCollateralMaximum = 2000; // MN collateral at infinity
-        consensus.nMasternodeCollateral201908  = 500; // MN collateral
+        consensus.nMasternodeCollateral = 500; // MN collateral
         // VELES BEGIN
         consensus.nMasternodePaymentsStartPercent =  5;     // at VCIP01 this should equal to approx same VLS amount as before
         consensus.nMasternodePaymentsFinalPercent =  60;    // will be reached in ca 5 years
@@ -163,9 +161,16 @@ public:
         // This is fine at runtime as we'll fall back to using them as a oneshot if they don't support the
         // service bits we want, but we should get them updated to support all service bits wanted by any
         // release ASAP to avoid it where possible.
-        vSeeds.emplace_back("explorer.veles.network");
-        vSeeds.emplace_back("veles.network");
-	      vSeeds.emplace_back("80.211.97.48");
+        vSeeds.emplace_back("seed.veles.network");
+        vSeeds.emplace_back("seed1.veles.network");
+	    vSeeds.emplace_back("seed2.veles.network");
+        vSeeds.emplace_back("seed3.veles.network");
+        vSeeds.emplace_back("seed4.veles.network");
+        vSeeds.emplace_back("seed5.veles.network");
+        vSeeds.emplace_back("seed6.veles.network");
+        vSeeds.emplace_back("seed7.veles.network");
+        vSeeds.emplace_back("seed8.veles.network");
+        vSeeds.emplace_back("seed9.veles.network");
         //vSeeds.emplace_back("seeds.on.another.domain"); // dns seeds template
 
         // VELES prefix 'V'
@@ -245,9 +250,7 @@ public:
         consensus.nMasternodePaymentsStartBlock = 10; // not true, but it's ok as long as it's less then nMasternodePaymentsIncreaseBlock
         //consensus.nMasternodePaymentsIncreaseBlock = 10;
         consensus.nMasternodePaymentsIncreasePeriod = 25;
-        consensus.nMasternodeCollateralMinimum = 10; // starting MN collateral
-        consensus.nMasternodeCollateralMaximum = 1000; // MN collateral at infinity
-        consensus.nMasternodeCollateral201908  = 500; // MN collateral
+        consensus.nMasternodeCollateral = 500; // MN collateral
         // VELES BEGIN
          consensus.nMasternodePaymentsStartPercent =  5;
          consensus.nMasternodePaymentsFinalPercent =  60; // will be reached in ca 5 yrs
@@ -394,9 +397,7 @@ public:
 	      consensus.nMasternodePaymentsStartBlock = 240;
         //consensus.nMasternodePaymentsIncreaseBlock = 350;
         consensus.nMasternodePaymentsIncreasePeriod = 10;
-        consensus.nMasternodeCollateralMinimum = 1; // starting MN collateral
-        consensus.nMasternodeCollateralMaximum = 100; // MN collateral at infinity
-        consensus.nMasternodeCollateral201908  = 500; // MN collateral
+        consensus.nMasternodeCollateral = 500; // MN collateral
         // VELES BEGIN
         consensus.nMasternodePaymentsStartPercent =  5;
         consensus.nMasternodePaymentsFinalPercent =  60; // will be reached in ca 5 yrs
